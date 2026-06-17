@@ -17,6 +17,8 @@ import {
 
 function Profile() {
   const [openModal, setOpenModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [userList, setUserList] = useState([]);
 
   const [posts, setPosts] = useState([]);
   const userEmail = localStorage.getItem("userEmail");
@@ -55,6 +57,24 @@ function Profile() {
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+  const openFollowers = async () => {
+    const res = await axios.get(
+      `https://sm-1-o0j5.onrender.com/followers/${userEmail}`
+    );
+    setUserList(res.data);
+    setModalTitle("Followers");
+    setOpenModal(true);
+  };
+
+  const openFollowing = async () => {
+    const res = await axios.get(
+      `https://sm-1-o0j5.onrender.com/following-list/${userEmail}`
+    );
+    setUserList(res.data);
+    setModalTitle("Following");
+    setOpenModal(true);
+  };
 
   return (
     <Container
@@ -103,13 +123,21 @@ function Profile() {
         </Grid>
 
         <Grid item>
-          <Typography variant="subtitle1">
+          <Typography
+            variant="subtitle1"
+            sx={{ cursor: "pointer" }}
+            onClick={openFollowers}
+          >
             <b>{stats.followers}</b> Followers
           </Typography>
         </Grid>
 
         <Grid item>
-          <Typography variant="subtitle1">
+          <Typography
+            variant="subtitle1"
+            sx={{ cursor: "pointer" }}
+            onClick={openFollowing}
+          >
             <b>{stats.following}</b> Following
           </Typography>
         </Grid>
