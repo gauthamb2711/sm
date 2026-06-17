@@ -1,6 +1,6 @@
 import SidebarLayout from "./SidebarLayout";
 import { io } from "socket.io-client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   AppBar,
@@ -41,31 +41,24 @@ function Dashboard() {
   const [postText, setPostText] = useState("");
   const [media, setMedia] = useState(null);
   const [openComposer, setOpenComposer] = useState(false);
-  const [editingPost, setEditingPost] = useState(null);
-  const [editText, setEditText] = useState("");
   const [comments, setComments] = useState({});
   const [notifications, setNotifications] = useState([]);
   const [likedPost, setLikedPost] = useState(null);
+  const viewedPostsRef = useRef(new Set());
 
-  /* ================= SOCKET ================= */
-  useEffect(() => {
+  const fetchPosts = useCallback(async () => {
     if (!userEmail) return;
 
-    socket.emit("registerUser", userEmail);
+    const res = await axios.get("https://sm-1-o0j5.onrender.com/posts");
 
-    socket.on("notification", (data) => {
-      if (!data.target || data.target === userEmail) {
-        setNotifications((prev) => [data.message, ...prev]);
-      }
-    });
+    const filtered = res.data.filter(
+      (post) =>
+        post.userEmail === userEmail ||
+        following.includes(post.userEmail)
+    );
 
-    socket.on("postUpdated", fetchPosts);
-
-    return () => {
-      socket.off("notification");
-      socket.off("postUpdated");
-    };
-  }, [userEmail, following]);
+    setPosts(filtered);
+  }, [following, userEmail]);
 
   /* ================= FETCH FOLLOWING ================= */
   useEffect(() => {
@@ -79,38 +72,42 @@ function Dashboard() {
   /* ================= FETCH POSTS ================= */
   useEffect(() => {
     fetchPosts();
-  }, [following]);
+  }, [fetchPosts]);
 
-  const fetchPosts = async () => {
-    const res = await axios.get("https://sm-1-o0j5.onrender.com/posts");
+  /* ================= SOCKET ================= */
+  useEffect(() => {
+    if (!userEmail) return;
 
-    const filtered = res.data.filter(
-      (post) =>
-        post.userEmail === userEmail ||
-        following.includes(post.userEmail)
-    );
+    const handleNotification = (data) => {
+      if (!data.target || data.target === userEmail) {
+        setNotifications((prev) => [data.message, ...prev]);
+      }
+    };
 
-    setPosts(filtered);
-  };
+    socket.emit("registerUser", userEmail);
+    socket.on("notification", handleNotification);
+    socket.on("postUpdated", fetchPosts);
+
+    return () => {
+      socket.off("notification", handleNotification);
+      socket.off("postUpdated", fetchPosts);
+    };
+  }, [userEmail, fetchPosts]);
 
   useEffect(() => {
-  posts.forEach(post => {
-    axios.post(`https://sm-1-o0j5.onrender.com/view-post/${post._id}`, {
-      userEmail
+    if (!userEmail || posts.length === 0) return;
+
+    const newPosts = posts.filter(
+      (post) => !viewedPostsRef.current.has(post._id)
+    );
+
+    newPosts.forEach((post) => {
+      viewedPostsRef.current.add(post._id);
+      axios.post(`https://sm-1-o0j5.onrender.com/view-post/${post._id}`, {
+        userEmail
+      });
     });
-  });
-}, [posts]);
-
-
-useEffect(() => {
-  if (!userEmail || posts.length === 0) return;
-
-  posts.forEach(post => {
-    axios.post(`https://sm-1-o0j5.onrender.com/view-post/${post._id}`, {
-      userEmail
-    });
-  });
-}, [posts, userEmail]);
+  }, [posts, userEmail]);
 
 
   /* ================= CREATE POST ================= */
@@ -146,20 +143,6 @@ useEffect(() => {
     setPostText("");
     setMedia(null);
     setOpenComposer(false);
-    fetchPosts();
-  };
-
-  /* ================= EDIT POST ================= */
-  const handleEditPost = async () => {
-    if (!editText.trim()) return;
-
-    await axios.put(
-      `https://sm-1-o0j5.onrender.com/edit-post/${editingPost._id}`,
-      { text: editText, userEmail }
-    );
-
-    setEditingPost(null);
-    setEditText("");
     fetchPosts();
   };
 
@@ -262,19 +245,9 @@ useEffect(() => {
                       title={post.userEmail}
                       action={
                         post.userEmail === userEmail && (
-                          <>
-                            <IconButton
-                              onClick={() => {
-                                setEditingPost(post);
-                                setEditText(post.text);
-                              }}
-                            >
-                              ✏️
-                            </IconButton>
-                            <IconButton onClick={() => handleDelete(post._id)}>
-                              <DeleteIcon />
-                            </IconButton>
-                          </>
+                          <IconButton onClick={() => handleDelete(post._id)}>
+                            <DeleteIcon />
+                          </IconButton>
                         )
                       }
                     />

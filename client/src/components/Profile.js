@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import {
   Container,
@@ -8,7 +8,7 @@ import {
   Grid,
   Card,
   CardContent,
-Button,
+  Button,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -17,23 +17,20 @@ Button,
 
 function Profile() {
   const [openModal, setOpenModal] = useState(false);
-const [modalTitle, setModalTitle] = useState("");
-const [userList, setUserList] = useState([]);
+  const [modalTitle, setModalTitle] = useState("");
+  const [userList, setUserList] = useState([]);
 
   const [posts, setPosts] = useState([]);
   const userEmail = localStorage.getItem("userEmail");
   const [stats, setStats] = useState({
-  posts: 0,
-  followers: 0,
-  following: 0
-});
+    posts: 0,
+    followers: 0,
+    following: 0
+  });
 
+  const fetchMyPosts = useCallback(async () => {
+    if (!userEmail) return;
 
-  useEffect(() => {
-    fetchMyPosts();
-  }, []);
-
-  const fetchMyPosts = async () => {
     try {
       const res = await axios.get(
         `https://sm-1-o0j5.onrender.com/posts/user/${userEmail}`
@@ -42,38 +39,24 @@ const [userList, setUserList] = useState([]);
     } catch {
       alert("Failed to load profile");
     }
-  };
+  }, [userEmail]);
 
+  const fetchStats = useCallback(async () => {
+    if (!userEmail) return;
 
-  useEffect(() => {
-  const fetchStats = async () => {
     const res = await axios.get(
       `https://sm-1-o0j5.onrender.com/profile-stats/${userEmail}`
     );
     setStats(res.data);
-  };
+  }, [userEmail]);
 
-  fetchStats();
-}, [userEmail]);
+  useEffect(() => {
+    fetchMyPosts();
+  }, [fetchMyPosts]);
 
-const openFollowers = async () => {
-  const res = await axios.get(
-    `https://sm-1-o0j5.onrender.com/followers/${userEmail}`
-  );
-  setUserList(res.data);
-  setModalTitle("Followers");
-  setOpenModal(true);
-};
-
-const openFollowing = async () => {
-  const res = await axios.get(
-    `https://sm-1-o0j5.onrender.com/following-list/${userEmail}`
-  );
-  setUserList(res.data);
-  setModalTitle("Following");
-  setOpenModal(true);
-};
-
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   return (
     <Container

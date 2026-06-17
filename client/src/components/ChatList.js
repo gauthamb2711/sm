@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -25,15 +25,19 @@ function ChatList() {
   const [searchUsers, setSearchUsers] = useState([]);
 
   /* ================= LOAD INBOX ================= */
-  const loadInbox = async () => {
+  const loadInbox = useCallback(async () => {
+    if (!userEmail) return;
+
     const res = await axios.get(
       `https://sm-1-o0j5.onrender.com/chat-inbox/${userEmail}`
     );
     setChats(res.data);
-  };
+  }, [userEmail]);
 
   /* ================= LOAD UNREAD ================= */
-  const loadUnread = async () => {
+  const loadUnread = useCallback(async () => {
+    if (!userEmail) return;
+
     const res = await axios.get(
       `https://sm-1-o0j5.onrender.com/unread-count/${userEmail}`
     );
@@ -44,36 +48,37 @@ function ChatList() {
     });
 
     setUnreadMap(map);
-  };
+  }, [userEmail]);
 
   useEffect(() => {
     if (!userEmail) return;
 
-    socket.emit("registerUser", userEmail);
-
-    loadInbox();
-    loadUnread();
-
-    socket.on("newMessage", (msg) => {
+    const handleNewMessage = (msg) => {
       loadInbox();
       setUnreadMap((prev) => ({
         ...prev,
         [msg.sender]: (prev[msg.sender] || 0) + 1
       }));
-    });
+    };
 
-    socket.on("userStatus", ({ email, online }) => {
+    const handleUserStatus = ({ email, online }) => {
       setOnlineMap((prev) => ({
         ...prev,
         [email]: online
       }));
-    });
+    };
+
+    socket.emit("registerUser", userEmail);
+    loadInbox();
+    loadUnread();
+    socket.on("newMessage", handleNewMessage);
+    socket.on("userStatus", handleUserStatus);
 
     return () => {
-      socket.off("newMessage");
-      socket.off("userStatus");
+      socket.off("newMessage", handleNewMessage);
+      socket.off("userStatus", handleUserStatus);
     };
-  }, [userEmail]);
+  }, [userEmail, loadInbox, loadUnread]);
 
   /* ================= SEARCH USERS ================= */
   const searchNewUsers = async (q) => {

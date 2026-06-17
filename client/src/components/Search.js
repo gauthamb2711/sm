@@ -7,7 +7,6 @@ import {
   CardHeader,
   Avatar,
   Button,
-  Box,
   Typography
 } from "@mui/material";
 

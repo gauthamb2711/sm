@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import {
   Container,
@@ -17,22 +17,24 @@ function Explore() {
 
   const userEmail = localStorage.getItem("userEmail");
 
-  useEffect(() => {
-    fetchPosts();
-    fetchFollowing();
-  }, []);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     const res = await axios.get("https://sm-1-o0j5.onrender.com/posts");
     setPosts(res.data);
-  };
+  }, []);
 
-  const fetchFollowing = async () => {
+  const fetchFollowing = useCallback(async () => {
+    if (!userEmail) return;
+
     const res = await axios.get(
       `https://sm-1-o0j5.onrender.com/following/${userEmail}`
     );
     setFollowing(res.data);
-  };
+  }, [userEmail]);
+
+  useEffect(() => {
+    fetchPosts();
+    fetchFollowing();
+  }, [fetchPosts, fetchFollowing]);
 
   const handleFollow = async (targetEmail) => {
     await axios.post("https://sm-1-o0j5.onrender.com/follow", {

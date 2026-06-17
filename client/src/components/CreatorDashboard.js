@@ -5,8 +5,7 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
-  LinearProgress
+  Grid
 } from "@mui/material";
 
 function CreatorDashboard() {
