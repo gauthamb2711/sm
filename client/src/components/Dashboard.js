@@ -31,7 +31,7 @@ import AddIcon from "@mui/icons-material/Add";
 const SIDEBAR_WIDTH = 280;
 const TOPBAR_HEIGHT = 64;
 
-const socket = io("http://localhost:5000");
+const socket = io("https://sm-1-o0j5.onrender.com");
 
 function Dashboard() {
   const userEmail = localStorage.getItem("userEmail");
@@ -72,7 +72,7 @@ function Dashboard() {
     if (!userEmail) return;
 
     axios
-      .get(`http://localhost:5000/following/${userEmail}`)
+      .get(`https://sm-1-o0j5.onrender.com/following/${userEmail}`)
       .then((res) => setFollowing(res.data));
   }, [userEmail]);
 
@@ -82,7 +82,7 @@ function Dashboard() {
   }, [following]);
 
   const fetchPosts = async () => {
-    const res = await axios.get("http://localhost:5000/posts");
+    const res = await axios.get("https://sm-1-o0j5.onrender.com/posts");
 
     const filtered = res.data.filter(
       (post) =>
@@ -95,7 +95,7 @@ function Dashboard() {
 
   useEffect(() => {
   posts.forEach(post => {
-    axios.post(`http://localhost:5000/view-post/${post._id}`, {
+    axios.post(`https://sm-1-o0j5.onrender.com/view-post/${post._id}`, {
       userEmail
     });
   });
@@ -106,7 +106,7 @@ useEffect(() => {
   if (!userEmail || posts.length === 0) return;
 
   posts.forEach(post => {
-    axios.post(`http://localhost:5000/view-post/${post._id}`, {
+    axios.post(`https://sm-1-o0j5.onrender.com/view-post/${post._id}`, {
       userEmail
     });
   });
@@ -136,7 +136,7 @@ useEffect(() => {
       media.type.startsWith("image") ? (image = url) : (video = url);
     }
 
-    await axios.post("http://localhost:5000/create-post", {
+    await axios.post("https://sm-1-o0j5.onrender.com/create-post", {
       text: postText,
       userEmail,
       image,
@@ -154,7 +154,7 @@ useEffect(() => {
     if (!editText.trim()) return;
 
     await axios.put(
-      `http://localhost:5000/edit-post/${editingPost._id}`,
+      `https://sm-1-o0j5.onrender.com/edit-post/${editingPost._id}`,
       { text: editText, userEmail }
     );
 
@@ -166,12 +166,12 @@ useEffect(() => {
   /* ================= ACTIONS ================= */
   const handleLike = async (id) => {
     setLikedPost(id);
-    await axios.post(`http://localhost:5000/like-post/${id}`, { userEmail });
+    await axios.post(`https://sm-1-o0j5.onrender.com/like-post/${id}`, { userEmail });
     setTimeout(() => setLikedPost(null), 300);
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/delete-post/${id}`, {
+    await axios.delete(`https://sm-1-o0j5.onrender.com/delete-post/${id}`, {
       data: { userEmail }
     });
     fetchPosts();
@@ -180,7 +180,7 @@ useEffect(() => {
   const handleComment = async (id) => {
     if (!comments[id]?.trim()) return;
 
-    await axios.post(`http://localhost:5000/comment/${id}`, {
+    await axios.post(`https://sm-1-o0j5.onrender.com/comment/${id}`, {
       text: comments[id],
       userEmail
     });

@@ -15,7 +15,7 @@ function CreatorDashboard() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/posts/user/${userEmail}`)
+      .get(`https://sm-1-o0j5.onrender.com/posts/user/${userEmail}`)
       .then((res) => setPosts(res.data));
   }, [userEmail]);
 

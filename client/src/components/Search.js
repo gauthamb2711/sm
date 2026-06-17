@@ -26,13 +26,13 @@ function Search() {
     }
 
     const res = await axios.get(
-      `http://localhost:5000/search-users/${value}`
+      `https://sm-1-o0j5.onrender.com/search-users/${value}`
     );
     setUsers(res.data);
   };
 
   const handleFollow = async (targetEmail) => {
-    await axios.post("http://localhost:5000/follow", {
+    await axios.post("https://sm-1-o0j5.onrender.com/follow", {
       userEmail,
       targetEmail
     });

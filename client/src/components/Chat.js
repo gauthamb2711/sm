@@ -10,7 +10,7 @@ import {
 import { io } from "socket.io-client";
 import SidebarLayout from "./SidebarLayout";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://sm-1-o0j5.onrender.com");
 
 function Chat() {
   const { email: targetEmail } = useParams();
@@ -23,7 +23,7 @@ function Chat() {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:5000/messages/${userEmail}/${targetEmail}`
+        `https://sm-1-o0j5.onrender.com/messages/${userEmail}/${targetEmail}`
       )
       .then((res) => setMessages(res.data));
   }, [userEmail, targetEmail]);
@@ -44,7 +44,7 @@ function Chat() {
     if (!message.trim()) return;
 
     const res = await axios.post(
-      "http://localhost:5000/send-message",
+      "https://sm-1-o0j5.onrender.com/send-message",
       {
         sender: userEmail,
         receiver: targetEmail,

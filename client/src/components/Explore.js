@@ -23,19 +23,19 @@ function Explore() {
   }, []);
 
   const fetchPosts = async () => {
-    const res = await axios.get("http://localhost:5000/posts");
+    const res = await axios.get("https://sm-1-o0j5.onrender.com/posts");
     setPosts(res.data);
   };
 
   const fetchFollowing = async () => {
     const res = await axios.get(
-      `http://localhost:5000/following/${userEmail}`
+      `https://sm-1-o0j5.onrender.com/following/${userEmail}`
     );
     setFollowing(res.data);
   };
 
   const handleFollow = async (targetEmail) => {
-    await axios.post("http://localhost:5000/follow", {
+    await axios.post("https://sm-1-o0j5.onrender.com/follow", {
       userEmail,
       targetEmail
     });

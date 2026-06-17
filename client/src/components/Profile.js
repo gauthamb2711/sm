@@ -36,7 +36,7 @@ const [userList, setUserList] = useState([]);
   const fetchMyPosts = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/posts/user/${userEmail}`
+        `https://sm-1-o0j5.onrender.com/posts/user/${userEmail}`
       );
       setPosts(res.data);
     } catch {
@@ -48,7 +48,7 @@ const [userList, setUserList] = useState([]);
   useEffect(() => {
   const fetchStats = async () => {
     const res = await axios.get(
-      `http://localhost:5000/profile-stats/${userEmail}`
+      `https://sm-1-o0j5.onrender.com/profile-stats/${userEmail}`
     );
     setStats(res.data);
   };
@@ -58,7 +58,7 @@ const [userList, setUserList] = useState([]);
 
 const openFollowers = async () => {
   const res = await axios.get(
-    `http://localhost:5000/followers/${userEmail}`
+    `https://sm-1-o0j5.onrender.com/followers/${userEmail}`
   );
   setUserList(res.data);
   setModalTitle("Followers");
@@ -67,7 +67,7 @@ const openFollowers = async () => {
 
 const openFollowing = async () => {
   const res = await axios.get(
-    `http://localhost:5000/following-list/${userEmail}`
+    `https://sm-1-o0j5.onrender.com/following-list/${userEmail}`
   );
   setUserList(res.data);
   setModalTitle("Following");

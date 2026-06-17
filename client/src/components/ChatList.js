@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import SidebarLayout from "./SidebarLayout";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://sm-1-o0j5.onrender.com");
 
 function ChatList() {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ function ChatList() {
   /* ================= LOAD INBOX ================= */
   const loadInbox = async () => {
     const res = await axios.get(
-      `http://localhost:5000/chat-inbox/${userEmail}`
+      `https://sm-1-o0j5.onrender.com/chat-inbox/${userEmail}`
     );
     setChats(res.data);
   };
@@ -35,7 +35,7 @@ function ChatList() {
   /* ================= LOAD UNREAD ================= */
   const loadUnread = async () => {
     const res = await axios.get(
-      `http://localhost:5000/unread-count/${userEmail}`
+      `https://sm-1-o0j5.onrender.com/unread-count/${userEmail}`
     );
 
     const map = {};
@@ -84,7 +84,7 @@ function ChatList() {
     }
 
     const res = await axios.get(
-      `http://localhost:5000/search-users/${q}`
+      `https://sm-1-o0j5.onrender.com/search-users/${q}`
     );
 
     setSearchUsers(
