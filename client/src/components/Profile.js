@@ -17,8 +17,6 @@ import {
 
 function Profile() {
   const [openModal, setOpenModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [userList, setUserList] = useState([]);
 
   const [posts, setPosts] = useState([]);
   const userEmail = localStorage.getItem("userEmail");

@@ -258,7 +258,12 @@ function Dashboard() {
                       </Typography>
 
                       {post.image && (
-                        <img src={post.image} width="100%" style={{ marginTop: 12, borderRadius: 12 }} />
+                        <img
+                          src={post.image}
+                          alt={post.text || "Post image"}
+                          width="100%"
+                          style={{ marginTop: 12, borderRadius: 12 }}
+                        />
                       )}
                       {post.video && (
                         <video src={post.video} controls width="100%" />
